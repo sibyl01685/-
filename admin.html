@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ÉCLAT — 後台管理系統</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0F1117;
+  --surface: #171B26;
+  --surface2: #1E2436;
+  --border: rgba(255,255,255,0.08);
+  --text: #E8EAF0;
+  --text-dim: #7A8099;
+  --text-muted: #4A5068;
+  --gold: #C9A84C;
+  --gold-dim: rgba(201,168,76,0.15);
+  --green: #34D399;
+  --green-dim: rgba(52,211,153,0.12);
+  --red: #F87171;
+  --red-dim: rgba(248,113,113,0.12);
+  --blue: #60A5FA;
+  --blue-dim: rgba(96,165,250,0.12);
+  --purple: #A78BFA;
+  --purple-dim: rgba(167,139,250,0.12);
+  --sidebar-w: 240px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  position: fixed; left:0; top:0; bottom:0;
+  z-index: 10;
+}
+
+.sidebar-logo {
+  padding: 28px 24px 24px;
+  font-size: 18px; font-weight: 600; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--gold);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.sidebar-logo-badge {
+  font-size: 9px; letter-spacing: 1px;
+  background: var(--gold-dim); color: var(--gold);
+  padding: 2px 6px; border-radius: 3px;
+}
+
+.sidebar-section-label {
+  padding: 24px 24px 8px;
+  font-size: 10px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--text-muted);
+}
+
+.sidebar-nav { flex: 1; padding-bottom: 16px; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 24px;
+  cursor: pointer; color: var(--text-dim);
+  transition: all 0.2s; border-left: 2px solid transparent;
+  font-size: 13.5px; font-weight: 400;
+}
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-item.active {
+  color: var(--gold); background: var(--gold-dim);
+  border-left-color: var(--gold);
+}
+.nav-item .icon { width: 18px; text-align: center; font-size: 15px; }
+.nav-item .badge {
+  margin-left: auto; background: var(--red);
+  color: white; font-size: 10px; padding: 1px 6px; border-radius: 9px;
+}
+
+.sidebar-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+.admin-info {
+  display: flex; align-items: center; gap: 12px;
+}
+.admin-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--gold-dim); border: 1px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.admin-name { font-size: 13px; font-weight: 500; }
+.admin-role { font-size: 11px; color: var(--text-dim); }
+
+/* MAIN */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1; display: flex; flex-direction: column;
+}
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 5;
+}
+
+.page-title { font-size: 15px; font-weight: 600; }
+.page-breadcrumb { font-size: 12px; color: var(--text-dim); }
+
+.topbar-actions { display: flex; align-items: center; gap: 12px; }
+.topbar-btn {
+  padding: 7px 16px;
+  background: none; border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 12px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s; border-radius: 4px;
+}
+.topbar-btn:hover { border-color: var(--gold); color: var(--gold); }
+.topbar-btn.primary {
+  background: var(--gold); border-color: var(--gold);
+  color: #0F1117; font-weight: 600;
+}
+.topbar-btn.primary:hover { background: #e0bf6b; }
+
+/* CONTENT */
+.content { padding: 28px 32px; }
+
+/* TABS */
+.tabs {
+  display: flex; gap: 2px; margin-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+.tab {
+  padding: 10px 20px;
+  background: none; border: none; cursor: pointer;
+  color: var(--text-dim); font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px; transition: all 0.2s;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* STATS */
+.stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  border-radius: 6px;
+  position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+}
+.stat-card.gold::before { background: var(--gold); }
+.stat-card.green::before { background: var(--green); }
+.stat-card.blue::before { background: var(--blue); }
+.stat-card.red::before { background: var(--red); }
+
+.stat-label {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 12px;
+}
+.stat-value {
+  font-size: 28px; font-weight: 600;
+  color: var(--text); margin-bottom: 8px;
+  font-family: 'DM Mono', monospace;
+}
+.stat-delta {
+  font-size: 12px; display: flex; align-items: center; gap: 4px;
+}
+.stat-delta.up { color: var(--green); }
+.stat-delta.down { color: var(--red); }
+.stat-icon {
+  position: absolute; right: 20px; top: 20px;
+  font-size: 24px; opacity: 0.3;
+}
+
+/* TABLE */
+.table-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.table-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.table-title { font-size: 14px; font-weight: 600; }
+.table-tools { display: flex; gap: 10px; align-items: center; }
+
+.search-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text); padding: 7px 14px;
+  font-size: 12px; border-radius: 4px;
+  font-family: 'DM Sans', sans-serif; width: 220px;
+  transition: border-color 0.2s;
+}
+.search-input:focus { outline: none; border-color: var(--gold); }
+
+.select-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-dim); padding: 7px 12px;
+  font-size: 12px; border-radius: 4px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+
+table { width: 100%; border-collapse: collapse; }
+th {
+  padding: 12px 20px;
+  text-align: left; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-muted); font-weight: 500;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+.product-cell { display: flex; align-items: center; gap: 12px; }
+.product-thumb {
+  width: 40px; height: 48px;
+  background: var(--surface2);
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.product-name-cell { font-weight: 500; margin-bottom: 2px; }
+.product-sku { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 12px;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.5px;
+}
+.badge-green { background: var(--green-dim); color: var(--green); }
+.badge-red { background: var(--red-dim); color: var(--red); }
+.badge-gold { background: var(--gold-dim); color: var(--gold); }
+.badge-blue { background: var(--blue-dim); color: var(--blue); }
+.badge-purple { background: var(--purple-dim); color: var(--purple); }
+
+.action-btns { display: flex; gap: 6px; }
+.action-btn {
+  padding: 5px 12px; background: none;
+  border: 1px solid var(--border); color: var(--text-dim);
+  font-size: 11px; cursor: pointer; border-radius: 3px;
+  font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+}
+.action-btn:hover { border-color: var(--gold); color: var(--gold); }
+.action-btn.danger:hover { border-color: var(--red); color: var(--red); }
+
+.pagination {
+  padding: 14px 24px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.pagination-info { font-size: 12px; color: var(--text-dim); }
+.page-btns { display: flex; gap: 4px; }
+.page-btn {
+  width: 30px; height: 30px;
+  background: none; border: 1px solid var(--border);
+  color: var(--text-dim); cursor: pointer;
+  font-size: 12px; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.page-btn:hover, .page-btn.active {
+  background: var(--gold-dim); border-color: var(--gold); color: var(--gold);
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  z-index: 100; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; width: 600px; max-height: 85vh;
+  overflow-y: auto;
+  transform: scale(0.95); transition: transform 0.25s;
+}
+.modal-overlay.open .modal { transform: scale(1); }
+
+.modal-header {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-size: 16px; font-weight: 600; }
+.modal-close {
+  background: none; border: none; color: var(--text-dim);
+  font-size: 20px; cursor: pointer;
+}
+
+.modal-body { padding: 24px 28px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); }
+.form-input, .form-select, .form-textarea {
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--text); padding: 10px 14px;
+  font-size: 13px; border-radius: 4px;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none; border-color: var(--gold);
+}
+.form-textarea { resize: vertical; min-height: 80px; }
+
+.modal-footer {
+  padding: 20px 28px 24px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+/* CHART AREA */
+.charts-row {
+  display: grid; grid-template-columns: 2fr 1fr;
+  gap: 16px; margin-bottom: 28px;
+}
+.chart-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 20px 24px;
+}
+.chart-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.chart-card-title { font-size: 14px; font-weight: 600; }
+.chart-card-sub { font-size: 12px; color: var(--text-dim); }
+
+.mini-bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 100px; }
+.mini-bar {
+  flex: 1; background: var(--gold-dim); border-radius: 3px 3px 0 0;
+  position: relative; transition: background 0.2s; cursor: pointer;
+  border-bottom: 2px solid var(--gold);
+}
+.mini-bar:hover { background: var(--gold); }
+.mini-bar-label { font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 6px; }
+
+.donut-row { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.donut-item { display: flex; align-items: center; justify-content: space-between; }
+.donut-item-left { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.donut-dot { width: 8px; height: 8px; border-radius: 50%; }
+.donut-bar-bg { flex: 1; height: 3px; background: var(--border); border-radius: 2px; margin: 0 12px; }
+.donut-bar-fill { height: 100%; border-radius: 2px; }
+.donut-pct { font-size: 12px; color: var(--text-dim); font-family: 'DM Mono', monospace; }
+
+/* DB SCHEMA VIEW */
+.schema-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 16px; margin-bottom: 28px;
+}
+.schema-table {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden;
+}
+.schema-table-header {
+  padding: 12px 16px;
+  background: var(--gold-dim); border-bottom: 1px solid rgba(201,168,76,0.2);
+  display: flex; align-items: center; gap: 8px;
+}
+.schema-table-name { font-size: 13px; font-weight: 600; color: var(--gold); }
+.schema-table-count { font-size: 11px; color: var(--text-dim); margin-left: auto; }
+.schema-fields { padding: 8px 0; }
+.schema-field {
+  padding: 6px 16px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-family: 'DM Mono', monospace;
+}
+.schema-field:hover { background: rgba(255,255,255,0.02); }
+.field-key { color: var(--gold); font-size: 11px; }
+.field-name { color: var(--text); }
+.field-type { color: var(--text-muted); font-size: 11px; margin-left: auto; }
+.field-fk { color: var(--blue); font-size: 10px; background: var(--blue-dim); padding: 1px 5px; border-radius: 3px; }
+
+/* NOTIFICATION DOT */
+.notif-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green); animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+}
+
+/* STOCK indicator */
+.stock-bar { display: flex; align-items: center; gap: 8px; }
+.stock-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; min-width: 60px; }
+.stock-fill { height: 100%; border-radius: 2px; }
+
+/* SECTIONS */
+.section { display: none; }
+.section.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    ÉCLAT
+    <span class="sidebar-logo-badge">ADMIN</span>
+    <a href="index.html" style="margin-left:auto;font-size:10px;letter-spacing:1px;color:var(--gold);opacity:0.6;text-decoration:none;font-weight:400;" title="前往前台" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">↗ 前台</a>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">主選單</div>
+    <div class="nav-item active" onclick="showSection('dashboard',this)">
+      <span class="icon">📊</span> 儀表板
+    </div>
+    <div class="nav-item" onclick="showSection('products',this)">
+      <span class="icon">👕</span> 商品管理
+    </div>
+    <div class="nav-item" onclick="showSection('orders',this)">
+      <span class="icon">📦</span> 訂單管理
+      <span class="badge">5</span>
+    </div>
+    <div class="nav-item" onclick="showSection('customers',this)">
+      <span class="icon">👥</span> 會員管理
+    </div>
+    <div class="nav-item" onclick="showSection('inventory',this)">
+      <span class="icon">🗃️</span> 庫存管理
+    </div>
+    <div class="sidebar-section-label">系統</div>
+    <div class="nav-item" onclick="showSection('database',this)">
+      <span class="icon">🗄️</span> 資料庫結構
+    </div>
+    <div class="nav-item">
+      <span class="icon">📈</span> 報表分析
+    </div>
+    <div class="nav-item">
+      <span class="icon">⚙️</span> 系統設定
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="admin-info">
+      <div class="admin-avatar">👤</div>
+      <div>
+        <div class="admin-name">管理員</div>
+        <div class="admin-role">超級管理員</div>
+      </div>
+      <div class="notif-dot" style="margin-left:auto"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="pageTitle">儀表板</div>
+      <div class="page-breadcrumb" id="pageBreadcrumb">ÉCLAT Admin / 儀表板</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="topbar-btn" onclick="alert('報表已匯出！')">📥 匯出報表</button>
+      <button class="topbar-btn primary" onclick="openModal()">＋ 新增商品</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="section active" id="section-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card gold">
+          <div class="stat-icon">💰</div>
+          <div class="stat-label">本月營收</div>
+          <div class="stat-value">$842,650</div>
+          <div class="stat-delta up">▲ 18.2% 較上月</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">📦</div>
+          <div class="stat-label">今日訂單</div>
+          <div class="stat-value">147</div>
+          <div class="stat-delta up">▲ 23 筆 較昨日</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">活躍會員</div>
+          <div class="stat-value">8,342</div>
+          <div class="stat-delta up">▲ 5.4% 本月新增</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-label">低庫存警告</div>
+          <div class="stat-value">12</div>
+          <div class="stat-delta down">▼ 需補貨商品</div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">近7日銷售趨勢</div>
+              <div class="chart-card-sub">單位：新台幣</div>
+            </div>
+          </div>
+          <div class="mini-bar-chart" id="salesChart"></div>
+          <div style="display:flex; gap:6px; margin-top:4px;" id="salesLabels"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title">分類銷售占比</div>
+          </div>
+          <div class="donut-row" id="categoryChart"></div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <div class="table-header">
+          <div class="table-title">最新訂單</div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>訂單編號</th>
+              <th>會員</th>
+              <th>商品數</th>
+              <th>金額</th>
+              <th>狀態</th>
+              <th>時間</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="dashboardOrders"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="section" id="section-products">
+      <div class="table-container">
+        <div class="table-header">
+          <div class="table-title">商品列表 <span style="color:var(--text-dim);font-weight:400;font-size:12px">（共 8 件）</span></div>
+          <div class="table-tools">
+            <input class="search-input" placeholder="搜尋商品名稱、SKU…" oninput="filterTable(this.value)">
+            <select class="select-input">
+              <option>全部分類</option>
+              <option>女裝</option><option>男裝</option>
+              <option>外套</option><option>配件</option>
+            </select>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>商品</th><th>SKU</th><th>分類</th>
+              <th>售價</th><th>庫存</th><th>狀態</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="productsTable"></tbody>
+        </table>
+        <div class="pagination">
+          <div class="pagination-info">顯示 1–8 / 共 8 件</div>
+          <div class="page-btns">
+            <button class="page-btn">‹</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="section" id="section-orders">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab(this,'all-orders')">全部訂單</button>
+        <button class="tab" onclick="switchTab(this,'pending')">待處理 <span style="color:var(--red)">(5)</span></button>
+        <button class="tab" onclick="switchTab(this,'shipping')">配送中</button>
+        <button class="tab" onclick="switchTab(this,'completed')">已完成</button>
+      </div>
+      <div class="table-container">
+        <div class="table-header">
+          <div class="table-title">訂單管理</div>
+          <div class="table-tools">
+            <input class="search-input" placeholder="搜尋訂單編號、會員…">
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>訂單編號</th><th>會員</th><th>商品</th>
+              <th>金額</th><th>付款方式</th><th>狀態</th><th>建立時間</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CUSTOMERS -->
+    <div class="section" id="section-customers">
+      <div class="table-container">
+        <div class="table-header">
+          <div class="table-title">會員資料庫</div>
+          <div class="table-tools">
+            <input class="search-input" placeholder="搜尋會員名稱、Email…">
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>會員</th><th>Email</th><th>註冊日</th>
+              <th>訂單數</th><th>消費總額</th><th>等級</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="customersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div class="section" id="section-inventory">
+      <div class="table-container">
+        <div class="table-header">
+          <div class="table-title">庫存管理</div>
+          <div class="table-tools">
+            <select class="select-input">
+              <option>全部倉庫</option>
+              <option>台北倉</option><option>台中倉</option>
+            </select>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>商品</th><th>SKU</th><th>顏色/尺寸</th>
+              <th>庫存量</th><th>安全庫存</th><th>庫存狀態</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DATABASE SCHEMA -->
+    <div class="section" id="section-database">
+      <div style="margin-bottom:20px">
+        <div style="font-size:16px; font-weight:600; margin-bottom:6px">資料庫結構設計</div>
+        <div style="font-size:13px; color:var(--text-dim)">MySQL / PostgreSQL · 版本 2.4.1 · 共 8 張資料表</div>
+      </div>
+      <div class="schema-grid" id="schemaGrid"></div>
+
+      <div class="table-container" style="margin-top:16px">
+        <div class="table-header"><div class="table-title">SQL Schema 建表語法</div></div>
+        <div style="padding: 20px 24px; overflow-x: auto;">
+          <pre style="font-family:'DM Mono',monospace; font-size:12px; line-height:1.8; color:var(--text-dim);" id="sqlOutput"></pre>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ADD PRODUCT MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleModalClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">新增商品</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">商品名稱</label>
+          <input class="form-input" placeholder="例：輕薄防風外套">
+        </div>
+        <div class="form-group">
+          <label class="form-label">品牌</label>
+          <input class="form-input" placeholder="例：STUDIO A">
+        </div>
+        <div class="form-group">
+          <label class="form-label">SKU</label>
+          <input class="form-input" placeholder="例：JKT-001-BLK">
+        </div>
+        <div class="form-group">
+          <label class="form-label">分類</label>
+          <select class="form-select">
+            <option>女裝</option><option>男裝</option>
+            <option>外套</option><option>配件</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">售價（NT$）</label>
+          <input class="form-input" type="number" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">原價（NT$）</label>
+          <input class="form-input" type="number" placeholder="留空表示無折扣">
+        </div>
+        <div class="form-group">
+          <label class="form-label">庫存數量</label>
+          <input class="form-input" type="number" placeholder="0">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">商品描述</label>
+          <textarea class="form-textarea" placeholder="商品詳細說明…"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">顏色選項</label>
+          <input class="form-input" placeholder="黑色, 白色, 藍色">
+        </div>
+        <div class="form-group">
+          <label class="form-label">尺寸選項</label>
+          <input class="form-input" placeholder="XS, S, M, L, XL">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn" onclick="closeModal()">取消</button>
+      <button class="topbar-btn primary" onclick="saveProduct()">儲存商品</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// DATA
+const products_db = [
+  {id:1,name:'輕薄防風外套',brand:'STUDIO A',sku:'JKT-001-BLK',cat:'外套',price:4980,oldPrice:null,stock:34,status:'上架',emoji:'🧥'},
+  {id:2,name:'亞麻寬版洋裝',brand:'LINEN+',sku:'DRS-002-BEI',cat:'女裝',price:2680,oldPrice:3380,stock:7,status:'上架',emoji:'👗'},
+  {id:3,name:'高腰直筒丹寧',brand:'DENIM CO.',sku:'JNS-003-BLU',cat:'女裝',price:1980,oldPrice:null,stock:52,status:'上架',emoji:'👖'},
+  {id:4,name:'皮革手提托特包',brand:'ARTISAN',sku:'BAG-004-BRN',cat:'配件',price:3480,oldPrice:null,stock:18,status:'上架',emoji:'👜'},
+  {id:5,name:'羊毛混紡西裝外套',brand:'TAILORED',sku:'BLZ-005-GRY',cat:'男裝',price:6800,oldPrice:8500,stock:3,status:'低庫存',emoji:'🤵'},
+  {id:6,name:'棉麻條紋T恤',brand:'BASICS',sku:'TEE-006-WHT',cat:'男裝',price:880,oldPrice:null,stock:89,status:'上架',emoji:'👕'},
+  {id:7,name:'絲緞滑面睡衣套裝',brand:'LUXE SLEEP',sku:'PJM-007-PNK',cat:'女裝',price:3280,oldPrice:null,stock:0,status:'缺貨',emoji:'🩱'},
+  {id:8,name:'真皮踝靴',brand:'STEP BY STEP',sku:'SHO-008-BLK',cat:'配件',price:5480,oldPrice:6800,stock:11,status:'上架',emoji:'👢'},
+];
+
+const orders_db = [
+  {id:'#ORD-20260606-001',customer:'陳小雯',items:3,amount:8640,payment:'信用卡',status:'待出貨',time:'10:23'},
+  {id:'#ORD-20260606-002',customer:'林志明',items:1,amount:4980,payment:'LINE Pay',status:'配送中',time:'09:47'},
+  {id:'#ORD-20260606-003',customer:'王大維',items:2,amount:6160,payment:'信用卡',status:'已完成',time:'09:12'},
+  {id:'#ORD-20260606-004',customer:'張美玲',items:4,amount:12480,payment:'ATM轉帳',status:'待付款',time:'08:55'},
+  {id:'#ORD-20260606-005',customer:'李佳欣',items:2,amount:5360,payment:'貨到付款',status:'待出貨',time:'08:30'},
+  {id:'#ORD-20260605-089',customer:'吳宗翰',items:1,amount:3480,payment:'信用卡',status:'已完成',time:'昨天'},
+  {id:'#ORD-20260605-088',customer:'黃怡君',items:3,amount:9340,payment:'LINE Pay',status:'已完成',time:'昨天'},
+];
+
+const customers_db = [
+  {name:'陳小雯',email:'chen@email.com',joined:'2024-03-12',orders:14,total:62480,level:'VIP'},
+  {name:'林志明',email:'lin@email.com',joined:'2024-08-22',orders:7,total:28900,level:'黃金'},
+  {name:'王大維',email:'wang@email.com',joined:'2025-01-05',orders:3,total:12640,level:'白銀'},
+  {name:'張美玲',email:'zhang@email.com',joined:'2023-11-30',orders:28,total:134700,level:'鑽石'},
+  {name:'李佳欣',email:'li@email.com',joined:'2025-06-01',orders:1,total:5360,level:'一般'},
+];
+
+const statusClass = {
+  '上架':'badge-green','低庫存':'badge-gold','缺貨':'badge-red',
+  '待出貨':'badge-gold','配送中':'badge-blue','已完成':'badge-green','待付款':'badge-red',
+  'VIP':'badge-purple','鑽石':'badge-gold','黃金':'badge-blue','白銀':'badge-green','一般':'',
+};
+
+const salesData = [
+  {day:'週一',v:68},{day:'週二',v:82},{day:'週三',v:71},
+  {day:'週四',v:95},{day:'週五',v:108},{day:'週六',v:142},{day:'週日',v:127}
+];
+
+const catData = [
+  {name:'女裝',pct:42,color:'#C9A84C'},{name:'男裝',pct:28,color:'#60A5FA'},
+  {name:'外套',pct:18,color:'#A78BFA'},{name:'配件',pct:12,color:'#34D399'},
+];
+
+const schemaData = [
+  { name:'products', count:'8 筆', fields:[
+    {key:'PK',name:'id',type:'INT AUTO'},
+    {key:'',name:'name',type:'VARCHAR(200)'},
+    {key:'',name:'brand',type:'VARCHAR(100)'},
+    {key:'',name:'sku',type:'VARCHAR(50) UNIQUE'},
+    {key:'FK',name:'category_id',type:'INT',fk:'categories'},
+    {key:'',name:'price',type:'DECIMAL(10,2)'},
+    {key:'',name:'original_price',type:'DECIMAL(10,2)'},
+    {key:'',name:'description',type:'TEXT'},
+    {key:'',name:'status',type:"ENUM('active','inactive')"},
+    {key:'',name:'created_at',type:'TIMESTAMP'},
+  ]},
+  { name:'categories', count:'6 筆', fields:[
+    {key:'PK',name:'id',type:'INT AUTO'},
+    {key:'',name:'name',type:'VARCHAR(100)'},
+    {key:'',name:'slug',type:'VARCHAR(100)'},
+    {key:'',name:'parent_id',type:'INT NULL'},
+  ]},
+  { name:'product_variants', count:'64 筆', fields:[
+    {key:'PK',name:'id',type:'INT AUTO'},
+    {key:'FK',name:'product_id',type:'INT',fk:'products'},
+    {key:'',name:'color',type:'VARCHAR(50)'},
+    {key:'',name:'size',type:'VARCHAR(10)'},
+    {key:'',name:'stock',type:'INT DEFAULT 0'},
+    {key:'',name:'barcode',type:'VARCHAR(50)'},
+  ]},
+  { name:'orders', count:'147 筆', fields:[
+    {key:'PK',name:'id',type:'INT AUTO'},
+    {key:'FK',name:'customer_id',type:'INT',fk:'customers'},
+    {key:'',name:'order_no',type:'VARCHAR(30) UNIQUE'},
+    {key:'',name:'total_amount',type:'DECIMAL(12,2)'},
+    {key:'',name:'payment_method',type:'VARCHAR(50)'},
+    {key:'',name:'status',type:"ENUM('pending','paid','shipped','done','cancelled')"},
+    {key:'',name:'shipping_address',type:'TEXT'},
+    {key:'',name:'created_at',type:'TIMESTAMP'},
+  ]},
+  { name:'order_items', count:'312 筆', fields:[
+    {key:'PK',name:'id',type:'INT AUTO'},
+    {key:'FK',name:'order_id',type:'INT',fk:'orders'},
+    {key:'FK',name:'variant_id',type:'INT',fk:'product_variants'},
+    {key:'',name:'quantity',type:'INT'},
+    {key:'',name:'unit_price',type:'DECIMAL(10,2)'},
+  ]},
+  { name:'customers', count:'8,342 筆', fields:[
+    {key:'PK',name:'id',type:'INT AUTO'},
+    {key:'',name:'name',type:'VARCHAR(100)'},
+    {key:'',name:'email',type:'VARCHAR(200) UNIQUE'},
+    {key:'',name:'phone',type:'VARCHAR(20)'},
+    {key:'',name:'level',type:"ENUM('normal','silver','gold','vip','diamond')"},
+    {key:'',name:'total_spent',type:'DECIMAL(12,2)'},
+    {key:'',name:'created_at',type:'TIMESTAMP'},
+  ]},
+  { name:'product_images', count:'128 筆', fields:[
+    {key:'PK',name:'id',type:'INT AUTO'},
+    {key:'FK',name:'product_id',type:'INT',fk:'products'},
+    {key:'',name:'url',type:'VARCHAR(500)'},
+    {key:'',name:'sort_order',type:'INT DEFAULT 0'},
+    {key:'',name:'is_primary',type:'TINYINT(1)'},
+  ]},
+  { name:'reviews', count:'2,418 筆', fields:[
+    {key:'PK',name:'id',type:'INT AUTO'},
+    {key:'FK',name:'product_id',type:'INT',fk:'products'},
+    {key:'FK',name:'customer_id',type:'INT',fk:'customers'},
+    {key:'',name:'rating',type:'TINYINT(1)'},
+    {key:'',name:'comment',type:'TEXT'},
+    {key:'',name:'created_at',type:'TIMESTAMP'},
+  ]},
+];
+
+const sqlSchema = `-- ÉCLAT 電商資料庫 Schema
+-- 版本: 2.4.1 | 引擎: MySQL 8.0 / PostgreSQL 15
+
+CREATE TABLE categories (
+  id          INT AUTO_INCREMENT PRIMARY KEY,
+  name        VARCHAR(100) NOT NULL,
+  slug        VARCHAR(100) UNIQUE NOT NULL,
+  parent_id   INT NULL,
+  FOREIGN KEY (parent_id) REFERENCES categories(id)
+);
+
+CREATE TABLE products (
+  id             INT AUTO_INCREMENT PRIMARY KEY,
+  name           VARCHAR(200) NOT NULL,
+  brand          VARCHAR(100),
+  sku            VARCHAR(50) UNIQUE NOT NULL,
+  category_id    INT NOT NULL,
+  price          DECIMAL(10,2) NOT NULL,
+  original_price DECIMAL(10,2),
+  description    TEXT,
+  status         ENUM('active','inactive') DEFAULT 'active',
+  created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+CREATE TABLE product_variants (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT NOT NULL,
+  color      VARCHAR(50),
+  size       VARCHAR(10),
+  stock      INT DEFAULT 0,
+  barcode    VARCHAR(50),
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE product_images (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT NOT NULL,
+  url        VARCHAR(500) NOT NULL,
+  sort_order INT DEFAULT 0,
+  is_primary TINYINT(1) DEFAULT 0,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE customers (
+  id           INT AUTO_INCREMENT PRIMARY KEY,
+  name         VARCHAR(100) NOT NULL,
+  email        VARCHAR(200) UNIQUE NOT NULL,
+  phone        VARCHAR(20),
+  password_hash VARCHAR(255),
+  level        ENUM('normal','silver','gold','vip','diamond') DEFAULT 'normal',
+  total_spent  DECIMAL(12,2) DEFAULT 0,
+  created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+  id               INT AUTO_INCREMENT PRIMARY KEY,
+  customer_id      INT NOT NULL,
+  order_no         VARCHAR(30) UNIQUE NOT NULL,
+  total_amount     DECIMAL(12,2) NOT NULL,
+  payment_method   VARCHAR(50),
+  status           ENUM('pending','paid','shipped','done','cancelled') DEFAULT 'pending',
+  shipping_address TEXT,
+  notes            TEXT,
+  created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE TABLE order_items (
+  id          INT AUTO_INCREMENT PRIMARY KEY,
+  order_id    INT NOT NULL,
+  variant_id  INT NOT NULL,
+  quantity    INT NOT NULL,
+  unit_price  DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+  FOREIGN KEY (variant_id) REFERENCES product_variants(id)
+);
+
+CREATE TABLE reviews (
+  id          INT AUTO_INCREMENT PRIMARY KEY,
+  product_id  INT NOT NULL,
+  customer_id INT NOT NULL,
+  rating      TINYINT(1) NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  comment     TEXT,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (product_id) REFERENCES products(id),
+  FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+-- 常用索引
+CREATE INDEX idx_products_category ON products(category_id);
+CREATE INDEX idx_orders_customer   ON orders(customer_id);
+CREATE INDEX idx_orders_status     ON orders(status);
+CREATE INDEX idx_order_items_order ON order_items(order_id);
+CREATE INDEX idx_reviews_product   ON reviews(product_id);`;
+
+// RENDER FUNCTIONS
+function renderDashboard() {
+  // Sales chart
+  const max = Math.max(...salesData.map(d=>d.v));
+  document.getElementById('salesChart').innerHTML = salesData.map(d=>`
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;">
+      <div class="mini-bar" style="height:${(d.v/max*100)}%;width:100%;" title="NT$${(d.v*1000).toLocaleString()}"></div>
+    </div>
+  `).join('');
+  document.getElementById('salesLabels').innerHTML = salesData.map(d=>`
+    <div class="mini-bar-label" style="flex:1">${d.day}</div>
+  `).join('');
+
+  // Category chart
+  document.getElementById('categoryChart').innerHTML = catData.map(c=>`
+    <div class="donut-item">
+      <div class="donut-item-left">
+        <div class="donut-dot" style="background:${c.color}"></div>
+        ${c.name}
+      </div>
+      <div class="donut-bar-bg">
+        <div class="donut-bar-fill" style="width:${c.pct}%;background:${c.color}"></div>
+      </div>
+      <div class="donut-pct">${c.pct}%</div>
+    </div>
+  `).join('');
+
+  // Orders
+  document.getElementById('dashboardOrders').innerHTML = orders_db.slice(0,5).map(o=>`
+    <tr>
+      <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--gold)">${o.id}</td>
+      <td>${o.customer}</td>
+      <td>${o.items} 件</td>
+      <td style="font-weight:500">NT$${o.amount.toLocaleString()}</td>
+      <td><span class="badge ${statusClass[o.status]||''}">${o.status}</span></td>
+      <td style="color:var(--text-dim)">${o.time}</td>
+      <td><div class="action-btns">
+        <button class="action-btn">查看</button>
+        <button class="action-btn">處理</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function renderProducts(filter='') {
+  const data = filter ? products_db.filter(p=>
+    p.name.includes(filter) || p.sku.includes(filter) || p.brand.includes(filter)
+  ) : products_db;
+  document.getElementById('productsTable').innerHTML = data.map(p=>`
+    <tr>
+      <td>
+        <div class="product-cell">
+          <div class="product-thumb">${p.emoji}</div>
+          <div>
+            <div class="product-name-cell">${p.name}</div>
+            <div style="font-size:11px;color:var(--text-dim)">${p.brand}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="product-sku">${p.sku}</span></td>
+      <td>${p.cat}</td>
+      <td>
+        <div style="font-weight:500">NT$${p.price.toLocaleString()}</div>
+        ${p.oldPrice ? `<div style="font-size:11px;color:var(--text-dim);text-decoration:line-through">NT$${p.oldPrice.toLocaleString()}</div>` : ''}
+      </td>
+      <td>
+        <div class="stock-bar">
+          <div class="stock-track"><div class="stock-fill" style="width:${Math.min(p.stock/100*100,100)}%;background:${p.stock>20?'#34D399':p.stock>5?'#C9A84C':'#F87171'}"></div></div>
+          <span style="font-size:12px;color:var(--text-dim);min-width:28px">${p.stock}</span>
+        </div>
+      </td>
+      <td><span class="badge ${statusClass[p.status]||''}">${p.status}</span></td>
+      <td><div class="action-btns">
+        <button class="action-btn">編輯</button>
+        <button class="action-btn danger">刪除</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function renderOrders() {
+  document.getElementById('ordersTable').innerHTML = orders_db.map(o=>`
+    <tr>
+      <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--gold)">${o.id}</td>
+      <td>${o.customer}</td>
+      <td>${o.items} 件商品</td>
+      <td style="font-weight:500">NT$${o.amount.toLocaleString()}</td>
+      <td style="color:var(--text-dim)">${o.payment}</td>
+      <td><span class="badge ${statusClass[o.status]||''}">${o.status}</span></td>
+      <td style="color:var(--text-dim)">${o.time}</td>
+      <td><div class="action-btns">
+        <button class="action-btn">查看</button>
+        <button class="action-btn">更新狀態</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function renderCustomers() {
+  document.getElementById('customersTable').innerHTML = customers_db.map(c=>`
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:14px">👤</div>
+          <span style="font-weight:500">${c.name}</span>
+        </div>
+      </td>
+      <td style="color:var(--text-dim)">${c.email}</td>
+      <td style="color:var(--text-dim)">${c.joined}</td>
+      <td>${c.orders} 筆</td>
+      <td style="font-weight:500">NT$${c.total.toLocaleString()}</td>
+      <td><span class="badge ${statusClass[c.level]||''}">${c.level}</span></td>
+      <td><div class="action-btns">
+        <button class="action-btn">查看</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function renderInventory() {
+  const variants = [
+    {name:'輕薄防風外套',emoji:'🧥',sku:'JKT-001-BLK',color:'黑色',size:'M',stock:12,safe:10},
+    {name:'輕薄防風外套',emoji:'🧥',sku:'JKT-001-BLU',color:'藍色',size:'L',stock:22,safe:10},
+    {name:'亞麻寬版洋裝',emoji:'👗',sku:'DRS-002-BEI',color:'米色',size:'S',stock:7,safe:15},
+    {name:'高腰直筒丹寧',emoji:'👖',sku:'JNS-003-BLU',color:'藍色',size:'28',stock:52,safe:20},
+    {name:'羊毛混紡西裝外套',emoji:'🤵',sku:'BLZ-005-GRY',color:'灰色',size:'L',stock:3,safe:10},
+    {name:'絲緞滑面睡衣套裝',emoji:'🩱',sku:'PJM-007-PNK',color:'粉色',size:'M',stock:0,safe:8},
+    {name:'棉麻條紋T恤',emoji:'👕',sku:'TEE-006-WHT',color:'白色',size:'XL',stock:89,safe:20},
+    {name:'真皮踝靴',emoji:'👢',sku:'SHO-008-BLK',color:'黑色',size:'37',stock:11,safe:10},
+  ];
+  const getInvStatus = v => {
+    if(v.stock===0) return {label:'缺貨',cls:'badge-red'};
+    if(v.stock<v.safe) return {label:'低庫存',cls:'badge-gold'};
+    return {label:'正常',cls:'badge-green'};
+  };
+  document.getElementById('inventoryTable').innerHTML = variants.map(v=>{
+    const s = getInvStatus(v);
+    return `<tr>
+      <td>
+        <div class="product-cell">
+          <div class="product-thumb" style="width:32px;height:38px;font-size:18px">${v.emoji}</div>
+          <span style="font-weight:500">${v.name}</span>
+        </div>
+      </td>
+      <td><span class="product-sku">${v.sku}</span></td>
+      <td>${v.color} / ${v.size}</td>
+      <td style="font-family:'DM Mono',monospace;font-weight:600">${v.stock}</td>
+      <td style="color:var(--text-dim)">${v.safe}</td>
+      <td><span class="badge ${s.cls}">${s.label}</span></td>
+      <td><div class="action-btns">
+        <button class="action-btn">調整庫存</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderSchema() {
+  document.getElementById('schemaGrid').innerHTML = schemaData.map(t=>`
+    <div class="schema-table">
+      <div class="schema-table-header">
+        <span>🗃️</span>
+        <span class="schema-table-name">${t.name}</span>
+        <span class="schema-table-count">${t.count}</span>
+      </div>
+      <div class="schema-fields">
+        ${t.fields.map(f=>`
+          <div class="schema-field">
+            ${f.key ? `<span class="field-key">${f.key}</span>` : '<span style="width:16px"></span>'}
+            <span class="field-name">${f.name}</span>
+            ${f.fk ? `<span class="field-fk">→${f.fk}</span>` : ''}
+            <span class="field-type">${f.type}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('sqlOutput').textContent = sqlSchema;
+}
+
+// NAVIGATION
+function showSection(name, el) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  el.classList.add('active');
+  const titles = {
+    dashboard:'儀表板',products:'商品管理',orders:'訂單管理',
+    customers:'會員管理',inventory:'庫存管理',database:'資料庫結構'
+  };
+  document.getElementById('pageTitle').textContent = titles[name];
+  document.getElementById('pageBreadcrumb').textContent = `ÉCLAT Admin / ${titles[name]}`;
+}
+
+function switchTab(btn,id) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function filterTable(val) { renderProducts(val); }
+
+// MODAL
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+function handleModalClick(e) {
+  if(e.target===document.getElementById('modalOverlay')) closeModal();
+}
+function saveProduct() {
+  closeModal();
+  alert('商品已儲存！');
+}
+
+// INIT
+renderDashboard();
+renderProducts();
+renderOrders();
+renderCustomers();
+renderInventory();
+renderSchema();
+</script>
+</body>
+</html>

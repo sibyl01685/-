@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ÉCLAT — 時尚電商</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --charcoal: #1C1C1C;
+    --warm-gray: #8A857D;
+    --gold: #C9A84C;
+    --gold-light: #E8D5A3;
+    --rust: #B5472A;
+    --off-white: #FAF8F4;
+    --border: rgba(28,28,28,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--off-white);
+    color: var(--charcoal);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(245,240,232,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    text-decoration: none;
+  }
+
+  .nav-links { display: flex; gap: 36px; align-items: center; }
+  .nav-links a {
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--warm-gray); text-decoration: none;
+    transition: color 0.25s;
+  }
+  .nav-links a:hover { color: var(--charcoal); }
+
+  .nav-actions { display: flex; gap: 20px; align-items: center; }
+  .nav-actions button {
+    background: none; border: none; cursor: pointer;
+    font-size: 18px; color: var(--charcoal);
+    position: relative;
+  }
+  .cart-badge {
+    position: absolute; top: -6px; right: -8px;
+    width: 16px; height: 16px;
+    background: var(--rust); color: white;
+    border-radius: 50%; font-size: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Sans', sans-serif; font-weight: 500;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 64px;
+  }
+
+  .hero-left {
+    background: var(--charcoal);
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 80px 64px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800') center/cover;
+    opacity: 0.4;
+  }
+
+  .hero-left-content { position: relative; z-index: 1; }
+
+  .hero-tag {
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-tag::before {
+    content: ''; width: 32px; height: 1px; background: var(--gold);
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(52px, 7vw, 88px);
+    font-weight: 300;
+    line-height: 1.0;
+    color: var(--cream);
+    margin-bottom: 32px;
+  }
+  .hero-title em { font-style: italic; color: var(--gold-light); }
+
+  .hero-desc {
+    color: rgba(245,240,232,0.6);
+    font-size: 14px; line-height: 1.8;
+    max-width: 320px;
+    margin-bottom: 40px;
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--gold);
+    color: var(--charcoal);
+    padding: 14px 32px;
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 2px; text-transform: uppercase;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateX(4px); }
+  .btn-primary span { font-size: 18px; }
+
+  .hero-right {
+    background: var(--cream);
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: 80px 64px;
+  }
+
+  .hero-right-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .hero-mini-card {
+    background: white;
+    padding: 20px;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    border: 1px solid var(--border);
+  }
+  .hero-mini-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(28,28,28,0.1);
+  }
+
+  .hero-mini-img {
+    width: 100%; aspect-ratio: 3/4;
+    object-fit: cover; margin-bottom: 12px;
+    background: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+  }
+
+  .hero-mini-label {
+    font-size: 11px; color: var(--warm-gray);
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+  .hero-mini-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-weight: 600;
+    margin-top: 4px;
+  }
+
+  /* MARQUEE */
+  .marquee-bar {
+    background: var(--charcoal);
+    padding: 14px 0;
+    overflow: hidden;
+  }
+  .marquee-track {
+    display: flex; gap: 64px;
+    animation: marquee 20s linear infinite;
+    white-space: nowrap;
+  }
+  .marquee-track span {
+    font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--gold);
+  }
+  .marquee-track .dot { color: var(--warm-gray); }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* SECTION HEADER */
+  .section-header {
+    text-align: center; padding: 80px 48px 48px;
+  }
+  .section-label {
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 5vw, 60px);
+    font-weight: 300; line-height: 1.1;
+    color: var(--charcoal);
+  }
+  .section-title em { font-style: italic; }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 0 48px 40px; flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 8px 20px;
+    background: none; border: 1px solid var(--border);
+    font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer; color: var(--warm-gray);
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--charcoal); color: var(--cream); border-color: var(--charcoal);
+  }
+
+  /* PRODUCT GRID */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    padding: 0 48px 80px;
+  }
+
+  .product-card {
+    background: white;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    group: true;
+  }
+
+  .product-img {
+    width: 100%; aspect-ratio: 3/4;
+    overflow: hidden; position: relative;
+    background: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+  }
+  .product-img img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+  .product-card:hover .product-img img { transform: scale(1.06); }
+
+  .product-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(28,28,28,0.7));
+    padding: 40px 20px 20px;
+    transform: translateY(100%);
+    transition: transform 0.35s;
+    display: flex; gap: 8px;
+  }
+  .product-card:hover .product-overlay { transform: translateY(0); }
+
+  .overlay-btn {
+    flex: 1; padding: 10px;
+    background: var(--cream); border: none;
+    font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+  .overlay-btn:hover { background: var(--gold); }
+  .overlay-btn.wishlist {
+    flex: 0; padding: 10px 14px; background: rgba(245,240,232,0.8);
+  }
+
+  .product-badge {
+    position: absolute; top: 16px; left: 16px;
+    background: var(--rust); color: white;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    padding: 4px 10px;
+  }
+  .badge-new { background: var(--charcoal); }
+
+  .product-info { padding: 16px 20px 20px; }
+  .product-brand {
+    font-size: 10px; color: var(--warm-gray);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .product-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px; font-weight: 400;
+    margin-bottom: 8px;
+  }
+  .product-price-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .product-price {
+    font-size: 16px; font-weight: 500; color: var(--charcoal);
+  }
+  .product-price-old {
+    font-size: 13px; color: var(--warm-gray);
+    text-decoration: line-through;
+  }
+  .product-colors {
+    display: flex; gap: 6px; margin-top: 10px;
+  }
+  .color-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.15); cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .color-dot:hover, .color-dot.active {
+    transform: scale(1.3); outline: 1.5px solid var(--charcoal); outline-offset: 2px;
+  }
+
+  /* BANNER */
+  .promo-banner {
+    margin: 0 48px 80px;
+    background: var(--charcoal);
+    display: grid; grid-template-columns: 1fr 1fr;
+    overflow: hidden; position: relative;
+  }
+  .promo-content {
+    padding: 80px 64px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .promo-content .section-label { text-align: left; margin-bottom: 12px; }
+  .promo-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(40px, 5vw, 68px);
+    font-weight: 300; color: var(--cream); line-height: 1.1;
+    margin-bottom: 20px;
+  }
+  .promo-title em { font-style: italic; color: var(--gold-light); }
+  .promo-desc { color: rgba(245,240,232,0.5); font-size: 14px; line-height: 1.8; margin-bottom: 32px; }
+  .promo-img {
+    background: url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600') center/cover;
+    min-height: 400px;
+  }
+
+  /* CATEGORIES */
+  .categories {
+    padding: 0 48px 80px;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .cat-card {
+    position: relative; overflow: hidden;
+    aspect-ratio: 1; cursor: pointer;
+  }
+  .cat-bg {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.6s;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+  }
+  .cat-card:hover .cat-bg { transform: scale(1.06); }
+  .cat-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(28,28,28,0.7) 0%, transparent 60%);
+    display: flex; align-items: flex-end;
+    padding: 32px;
+  }
+  .cat-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px; font-weight: 300;
+    color: var(--cream);
+  }
+
+  /* CART DRAWER */
+  .cart-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    z-index: 200; opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .cart-overlay.open { opacity: 1; pointer-events: all; }
+
+  .cart-drawer {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: 400px; background: var(--off-white);
+    z-index: 201;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+    display: flex; flex-direction: column;
+  }
+  .cart-drawer.open { transform: translateX(0); }
+
+  .cart-header {
+    padding: 32px 32px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cart-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px; font-weight: 400;
+  }
+  .close-btn {
+    background: none; border: none; font-size: 22px;
+    cursor: pointer; color: var(--warm-gray);
+    transition: color 0.2s;
+  }
+  .close-btn:hover { color: var(--charcoal); }
+
+  .cart-items { flex: 1; overflow-y: auto; padding: 24px 32px; }
+
+  .cart-item {
+    display: grid; grid-template-columns: 80px 1fr auto;
+    gap: 16px; align-items: center;
+    padding: 16px 0; border-bottom: 1px solid var(--border);
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+  .cart-item-img {
+    width: 80px; height: 100px; object-fit: cover; background: var(--cream);
+    display: flex; align-items: center; justify-content: center; font-size: 28px;
+  }
+  .cart-item-name {
+    font-family: 'Cormorant Garamond', serif; font-size: 16px;
+  }
+  .cart-item-meta { font-size: 12px; color: var(--warm-gray); margin-top: 4px; }
+  .cart-item-price { font-size: 15px; font-weight: 500; }
+
+  .qty-ctrl {
+    display: flex; align-items: center; gap: 12px; margin-top: 8px;
+  }
+  .qty-btn {
+    width: 26px; height: 26px; border: 1px solid var(--border);
+    background: none; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .qty-num { font-size: 14px; min-width: 16px; text-align: center; }
+
+  .remove-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--warm-gray); font-size: 18px;
+    transition: color 0.2s; align-self: flex-start;
+  }
+  .remove-btn:hover { color: var(--rust); }
+
+  .cart-footer {
+    padding: 24px 32px 32px;
+    border-top: 1px solid var(--border);
+  }
+  .cart-total-row {
+    display: flex; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .cart-total-label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--warm-gray); }
+  .cart-total-amount { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; }
+
+  .btn-checkout {
+    width: 100%; padding: 16px;
+    background: var(--charcoal); color: var(--cream);
+    border: none; font-size: 12px; letter-spacing: 3px;
+    text-transform: uppercase; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+  .btn-checkout:hover { background: var(--rust); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--charcoal); color: var(--cream);
+    padding: 14px 28px; font-size: 13px;
+    z-index: 300; transition: transform 0.35s;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* FOOTER */
+  footer {
+    background: var(--charcoal);
+    color: var(--cream);
+    padding: 80px 48px 48px;
+  }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px; margin-bottom: 64px;
+  }
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px; font-weight: 600; letter-spacing: 6px;
+    text-transform: uppercase; color: var(--cream);
+    margin-bottom: 20px;
+  }
+  .footer-desc { color: rgba(245,240,232,0.45); font-size: 13px; line-height: 1.8; max-width: 280px; }
+  .footer-col h4 {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 20px;
+  }
+  .footer-col a {
+    display: block; color: rgba(245,240,232,0.55);
+    text-decoration: none; font-size: 13px;
+    margin-bottom: 10px; transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--cream); }
+  .footer-bottom {
+    border-top: 1px solid rgba(245,240,232,0.1);
+    padding-top: 32px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-bottom p { font-size: 12px; color: rgba(245,240,232,0.35); }
+
+  /* RESPONSIVE */
+  @media (max-width: 1024px) {
+    .product-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 768px) {
+    nav { padding: 0 24px; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .hero-left { padding: 60px 32px; }
+    .product-grid { padding: 0 24px 60px; gap: 8px; }
+    .promo-banner { margin: 0 24px 60px; grid-template-columns: 1fr; }
+    .promo-img { min-height: 200px; }
+    .categories { padding: 0 24px 60px; grid-template-columns: 1fr; }
+    .cart-drawer { width: 100%; }
+    .section-header { padding: 60px 24px 32px; }
+    .filter-bar { padding: 0 24px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">ÉCLAT</a>
+  <div class="nav-links">
+    <a href="#">新品</a>
+    <a href="#">女裝</a>
+    <a href="#">男裝</a>
+    <a href="#">配件</a>
+    <a href="#">特賣</a>
+  </div>
+  <div class="nav-actions">
+    <button onclick="toggleCart()">
+      🛒
+      <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+    <button>🔍</button>
+    <a href="admin.html" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--warm-gray);text-decoration:none;border:1px solid var(--border);padding:6px 14px;transition:all 0.2s;" onmouseover="this.style.color='var(--charcoal)';this.style.borderColor='var(--charcoal)'" onmouseout="this.style.color='var(--warm-gray)';this.style.borderColor='var(--border)'">後台</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-left-content">
+      <div class="hero-tag">2026 春夏系列</div>
+      <h1 class="hero-title">穿出<br>你的<br><em>風格</em></h1>
+      <p class="hero-desc">精選世界頂尖設計師品牌，每一件單品都是對品味的詮釋。</p>
+      <a href="#products" class="btn-primary">立即探索 <span>→</span></a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-right-grid">
+      <div class="hero-mini-card" onclick="addToCart('輕薄風衣','NT$4,980')">
+        <div class="hero-mini-img">🧥</div>
+        <div class="hero-mini-label">外套系列</div>
+        <div class="hero-mini-price">NT$4,980</div>
+      </div>
+      <div class="hero-mini-card" onclick="addToCart('亞麻洋裝','NT$2,680')">
+        <div class="hero-mini-img">👗</div>
+        <div class="hero-mini-label">洋裝系列</div>
+        <div class="hero-mini-price">NT$2,680</div>
+      </div>
+      <div class="hero-mini-card" onclick="addToCart('高腰丹寧','NT$1,980')">
+        <div class="hero-mini-img">👖</div>
+        <div class="hero-mini-label">丹寧系列</div>
+        <div class="hero-mini-price">NT$1,980</div>
+      </div>
+      <div class="hero-mini-card" onclick="addToCart('皮革托特包','NT$3,480')">
+        <div class="hero-mini-img">👜</div>
+        <div class="hero-mini-label">配件系列</div>
+        <div class="hero-mini-price">NT$3,480</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-bar">
+  <div class="marquee-track" id="marquee">
+    <span>免費配送 NT$2,000以上</span><span class="dot">◆</span>
+    <span>30天無憂退換</span><span class="dot">◆</span>
+    <span>2026 春夏新品上架</span><span class="dot">◆</span>
+    <span>會員專屬 8折優惠</span><span class="dot">◆</span>
+    <span>免費配送 NT$2,000以上</span><span class="dot">◆</span>
+    <span>30天無憂退換</span><span class="dot">◆</span>
+    <span>2026 春夏新品上架</span><span class="dot">◆</span>
+    <span>會員專屬 8折優惠</span><span class="dot">◆</span>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="section-header">
+    <div class="section-label">本季精選</div>
+    <h2 class="section-title">探索<em>新品</em></h2>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterProducts(this,'all')">全部</button>
+    <button class="filter-btn" onclick="filterProducts(this,'women')">女裝</button>
+    <button class="filter-btn" onclick="filterProducts(this,'men')">男裝</button>
+    <button class="filter-btn" onclick="filterProducts(this,'outer')">外套</button>
+    <button class="filter-btn" onclick="filterProducts(this,'acc')">配件</button>
+    <button class="filter-btn" onclick="filterProducts(this,'sale')">特賣</button>
+  </div>
+
+  <div class="product-grid" id="productGrid">
+    <!-- JS renders products -->
+  </div>
+</section>
+
+<!-- PROMO BANNER -->
+<div class="promo-banner">
+  <div class="promo-content">
+    <div class="section-label">限時特惠</div>
+    <h2 class="promo-title">夏日清倉<br><em>最低5折</em></h2>
+    <p class="promo-desc">精選超過300款夏日單品，限時降價，品味生活不必妥協。</p>
+    <button class="btn-primary">立即搶購 <span>→</span></button>
+  </div>
+  <div class="promo-img"></div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="section-header">
+  <div class="section-label">分類瀏覽</div>
+  <h2 class="section-title">找到你的<em>風格</em></h2>
+</div>
+<div class="categories">
+  <div class="cat-card">
+    <div class="cat-bg" style="background: linear-gradient(135deg,#d4b896,#c9a0a0); font-size:80px; display:flex; align-items:center; justify-content:center;">👗</div>
+    <div class="cat-overlay"><div class="cat-title">女裝</div></div>
+  </div>
+  <div class="cat-card">
+    <div class="cat-bg" style="background: linear-gradient(135deg,#8b9dab,#5a6d7c); font-size:80px; display:flex; align-items:center; justify-content:center;">🧔</div>
+    <div class="cat-overlay"><div class="cat-title">男裝</div></div>
+  </div>
+  <div class="cat-card">
+    <div class="cat-bg" style="background: linear-gradient(135deg,#b8a9c9,#8b7d9b); font-size:80px; display:flex; align-items:center; justify-content:center;">👜</div>
+    <div class="cat-overlay"><div class="cat-title">配件</div></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">ÉCLAT</div>
+      <p class="footer-desc">精選世界各地頂尖設計師品牌，為每一位追求品味的你，帶來最完美的穿搭體驗。</p>
+    </div>
+    <div class="footer-col">
+      <h4>購物指南</h4>
+      <a href="#">尺寸指南</a>
+      <a href="#">訂單查詢</a>
+      <a href="#">配送說明</a>
+      <a href="#">退換貨政策</a>
+    </div>
+    <div class="footer-col">
+      <h4>關於我們</h4>
+      <a href="#">品牌故事</a>
+      <a href="#">永續時尚</a>
+      <a href="#">合作品牌</a>
+      <a href="#">媒體報導</a>
+    </div>
+    <div class="footer-col">
+      <h4>聯絡我們</h4>
+      <a href="#">客服中心</a>
+      <a href="#">LINE官方</a>
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 ÉCLAT Fashion. 版權所有</p>
+    <p>隱私政策 · 服務條款 · Cookie設定</p>
+  </div>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h2>購物車</h2>
+    <button class="close-btn" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <p style="color:var(--warm-gray); font-size:14px; text-align:center; padding: 40px 0;">購物車是空的</p>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total-row">
+      <span class="cart-total-label">小計</span>
+      <span class="cart-total-amount" id="cartTotal">NT$0</span>
+    </div>
+    <button class="btn-checkout">前往結帳</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const products = [
+  { id:1, name:'輕薄防風外套', brand:'STUDIO A', price:4980, oldPrice:null, emoji:'🧥', category:'outer', colors:['#1C1C1C','#8B9DAB','#C9A0A0'], badge:'new' },
+  { id:2, name:'亞麻寬版洋裝', brand:'LINEN+', price:2680, oldPrice:3380, emoji:'👗', category:'women', colors:['#D4B896','#C9A0A0','#FFFFFF'], badge:'sale' },
+  { id:3, name:'高腰直筒丹寧', brand:'DENIM CO.', price:1980, oldPrice:null, emoji:'👖', category:'women', colors:['#5A6D7C','#1C1C1C'], badge:null },
+  { id:4, name:'皮革手提托特包', brand:'ARTISAN', price:3480, oldPrice:null, emoji:'👜', category:'acc', colors:['#8B6C5C','#1C1C1C','#C9A084'], badge:'new' },
+  { id:5, name:'羊毛混紡西裝外套', brand:'TAILORED', price:6800, oldPrice:8500, emoji:'🤵', category:'men', colors:['#3D3D3D','#5A6D7C'], badge:'sale' },
+  { id:6, name:'棉麻條紋T恤', brand:'BASICS', price:880, oldPrice:null, emoji:'👕', category:'men', colors:['#FFFFFF','#5A6D7C','#1C1C1C'], badge:null },
+  { id:7, name:'絲緞滑面睡衣套裝', brand:'LUXE SLEEP', price:3280, oldPrice:null, emoji:'🩱', category:'women', colors:['#B8A9C9','#D4B896','#1C1C1C'], badge:'new' },
+  { id:8, name:'真皮踝靴', brand:'STEP BY STEP', price:5480, oldPrice:6800, emoji:'👢', category:'acc', colors:['#8B6C5C','#1C1C1C'], badge:'sale' },
+];
+
+let cart = [];
+let currentFilter = 'all';
+
+function renderProducts(filter='all') {
+  const grid = document.getElementById('productGrid');
+  const filtered = filter==='all' ? products : products.filter(p=>p.category===filter);
+  grid.innerHTML = filtered.map(p=>`
+    <div class="product-card">
+      ${p.badge ? `<div class="product-badge ${p.badge==='new'?'badge-new':''}">${p.badge==='new'?'NEW':'SALE'}</div>` : ''}
+      <div class="product-img">${p.emoji}</div>
+      <div class="product-overlay">
+        <button class="overlay-btn" onclick="addToCart('${p.name}','NT$${p.price.toLocaleString()}')">加入購物車</button>
+        <button class="overlay-btn wishlist">♡</button>
+      </div>
+      <div class="product-info">
+        <div class="product-brand">${p.brand}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-price-row">
+          <span class="product-price">NT$${p.price.toLocaleString()}</span>
+          ${p.oldPrice ? `<span class="product-price-old">NT$${p.oldPrice.toLocaleString()}</span>` : ''}
+        </div>
+        <div class="product-colors">
+          ${p.colors.map((c,i)=>`<div class="color-dot ${i===0?'active':''}" style="background:${c}" onclick="event.stopPropagation()"></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterProducts(btn, filter) {
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts(filter);
+}
+
+function addToCart(name, price) {
+  const existing = cart.find(i=>i.name===name);
+  if(existing) { existing.qty++; }
+  else { cart.push({name, price, qty:1, emoji: getEmoji(name)}); }
+  renderCart();
+  showToast(`✓ ${name} 已加入購物車`);
+}
+
+function getEmoji(name) {
+  if(name.includes('包')) return '👜';
+  if(name.includes('靴')) return '👢';
+  if(name.includes('洋裝')) return '👗';
+  if(name.includes('外套')||name.includes('風衣')) return '🧥';
+  if(name.includes('丹寧')) return '👖';
+  return '👕';
+}
+
+function renderCart() {
+  const container = document.getElementById('cartItems');
+  if(!cart.length) {
+    container.innerHTML = '<p style="color:var(--warm-gray); font-size:14px; text-align:center; padding: 40px 0;">購物車是空的</p>';
+    document.getElementById('cartBadge').textContent = '0';
+    document.getElementById('cartTotal').textContent = 'NT$0';
+    return;
+  }
+  container.innerHTML = cart.map((item,i)=>`
+    <div class="cart-item">
+      <div class="cart-item-img">${item.emoji}</div>
+      <div>
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-meta">${item.price}</div>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="updateQty(${i},-1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="updateQty(${i},1)">+</button>
+        </div>
+      </div>
+      <button class="remove-btn" onclick="removeItem(${i})">✕</button>
+    </div>
+  `).join('');
+  const total = cart.reduce((s,i)=>{
+    const n = parseInt(i.price.replace(/[^\d]/g,''));
+    return s + n*i.qty;
+  }, 0);
+  document.getElementById('cartTotal').textContent = `NT$${total.toLocaleString()}`;
+  const totalQty = cart.reduce((s,i)=>s+i.qty,0);
+  document.getElementById('cartBadge').textContent = totalQty;
+}
+
+function updateQty(i, d) {
+  cart[i].qty += d;
+  if(cart[i].qty <= 0) cart.splice(i,1);
+  renderCart();
+}
+
+function removeItem(i) {
+  cart.splice(i,1);
+  renderCart();
+}
+
+function toggleCart() {
+  document.getElementById('cartOverlay').classList.toggle('open');
+  document.getElementById('cartDrawer').classList.toggle('open');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+// Color dots
+document.addEventListener('click', e => {
+  if(e.target.classList.contains('color-dot')) {
+    const parent = e.target.closest('.product-colors');
+    parent.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('active'));
+    e.target.classList.add('active');
+  }
+});
+
+renderProducts();
+</script>
+</body>
+</html>
